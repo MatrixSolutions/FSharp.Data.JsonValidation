@@ -9,7 +9,7 @@
 FSharp.Data.JsonValidation
 ======================
 
-A nifty little DSL for validating that JSON matches an expected schema.
+A nifty little DSL for validating JSON against expected schemas.
 
 <div class="row">
   <div class="span6">
@@ -38,22 +38,14 @@ validate schema (JsonValue.String "goodbye")
 validate schema (JsonValue.Number 42M)
 // returns: Valid
 
-
 (**
-Some more info
 
 Samples & documentation
 -----------------------
-
-The library comes with comprehensible documentation. 
-It can include tutorials automatically generated from `*.fsx` files in [the content folder][content]. 
-The API reference is automatically generated from Markdown comments in the library implementation.
-
  * [Tutorial](tutorial.html) contains a further explanation of this sample library.
 
- * [API Reference](api.html) contains automatically generated documentation for all types, modules
-   and functions in the library. This includes additional brief samples on using most of the
-   functions.
+ * [API Reference](api.html) contains documentation for types and functions in the library.
+   This includes additional brief examples on using the DSL.
  
 Contributing and copyright
 --------------------------
