@@ -1,7 +1,9 @@
 (*** hide ***)
 // This block of code is omitted in the generated HTML documentation. Use 
 // it to define helpers that you do not want to show in the documentation.
-#I "../../bin"
+#I "../../bin/FSharp.Data.JsonValidation/"
+#r "../../bin/FSharp.Data.JsonValidation/FSharp.Data.JsonValidation.dll"
+#r "../../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
 
 (**
 FSharp.Data.JsonValidation
@@ -26,7 +28,7 @@ Validating that a JSON value is exactly `"hi"` or `42`
 #r "FSharp.Data.JsonValidation.dll"
 
 open FSharp.Data
-open FSharp.Data.JsonValidation
+open JsonValidation
 
 let schema = ExactlyOneOf [JsonValue.String "hi"; JsonValue.Number 42M]
 

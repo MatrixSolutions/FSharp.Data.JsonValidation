@@ -1,6 +1,6 @@
 namespace FSharp.Data
 
-module JsonValidation =
+module public JsonValidation =
 
   type ValidationResult =
     | Valid

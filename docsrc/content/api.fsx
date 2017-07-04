@@ -1,7 +1,12 @@
 (*** hide ***)
 // This block of code is omitted in the generated HTML documentation. Use 
 // it to define helpers that you do not want to show in the documentation.
-#I "../../bin"
+#I "../../bin/FSharp.Data.JsonValidation/"
+#r "../../bin/FSharp.Data.JsonValidation/FSharp.Data.JsonValidation.dll"
+#r "../../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
+open FSharp.Data
+open JsonValidation
+let ``...`` _ _ = Valid
 
 (**
 # API Documentation
@@ -13,7 +18,7 @@ The `validate` function checks a schema against JSON (FSharp.Data.JsonValue) ret
 a `ValidationResult`.
 *)
 
-let valiate : JsonSchema -> JsonValue -> ValidationResult = ...
+let valiate : JsonSchema -> JsonValue -> ValidationResult = ``...``
 
 (**
 A `ValidationResult` is simply defined as
@@ -42,8 +47,10 @@ Anything
 ### Exact Matches
 
 #### Match _exactly_ a `JsonValue`
-*)
+```fsharp
 Exactly of JsonValue
+```
+*)
 
 (**
 example: schema to match exactly `42`
@@ -52,8 +59,10 @@ let schema42 = Exactly (JsonValue.Number 42M)
 
 (**
 #### Match exactly one of a few possible `JsonValue`s
-*)
+```fsharp
 ExactlyOneOf of JsonValue list
+```
+*)
 
 (**
 example: schema to match exactly `null` or `"the answer"`
@@ -80,8 +89,10 @@ AnyString
 
 (**
 #### Validate a string with specific criteria
-*)
+```fsharp
 StringThat of StringAttributes list
+```
+*)
 (**
 Where `StringAttributes` can be any combination of
 
@@ -101,8 +112,10 @@ let longDashing = StringThat [MeetsCriteria ("long and dashing", fun s -> s.Leng
 ### Objects
 
 #### Validate an object with specific keys
-*)
+```fsharp
 ObjectWhere of (KeyValidation * JsonSchema) list
+```
+*)
 (**
 
 Where `KeyValidation*JsonSchema` specifies key-value schemas such that
@@ -139,8 +152,10 @@ let person =
 ### Arrays
 
 #### Validate an array
-*)
+```fsharp
 ArrayWhose of ArrayAttributes list
+```
+*)
 (**
 
 Where `ArrayAttributes` can be any combination of
@@ -162,8 +177,10 @@ let numbers42 = ArrayWhose  [LengthIsExactly 42; ItemsMatch AnyNumber]
 ### Alternatives
 
 #### Given multiple schemas, validate that _any_ match
-*)
+```fsharp
 Either of JsonSchema list
+```
+*)
 (**
 
 Where `JsonSchema` can be any other `JsonSchema` described hereabouts
@@ -177,8 +194,10 @@ let stringOrNumber = Either [AnyString; AnyNumber; Exactly JsonValue.Null]
 
 #### Match a schema, lazily
 Useful when your JSON types may contain themselves
-*)
+```fsharp
 Delay of (unit -> JsonSchema)
+```
+*)
 (**
 
 Where `unit -> JsonSchema` is a function that just returns another

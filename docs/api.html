@@ -39,7 +39,7 @@
 a <code>ValidationResult</code>.</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span class="i">valiate</span> <span class="o">:</span> <span class="i">JsonSchema</span> <span class="k">-&gt;</span> <span class="i">JsonValue</span> <span class="k">-&gt;</span> <span class="i">ValidationResult</span> <span class="o">=</span> <span class="o">..</span><span class="o">.</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span class="i">valiate</span> <span class="o">:</span> <span class="i">JsonSchema</span> <span class="k">-&gt;</span> <span class="i">JsonValue</span> <span class="k">-&gt;</span> <span class="i">ValidationResult</span> <span class="o">=</span> <span class="i">``...``</span>
 </code></pre></td>
 </tr>
 </table>
@@ -242,22 +242,20 @@ used with the two above)</p>
 </table>
 <p>Where <code>unit -&gt; JsonSchema</code> is a function that just returns another
 <code>JsonSchema</code> to validate.</p>
-<p>example: schema to match a person who may have parents, who may have parents, who may
-have pare...</p>
+<p>example: schema to match a memory that may link to a memory that may link to a memory
+that may lin...</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-<span class="l">7: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span class="i">person</span> <span class="o">=</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span class="k">rec</span> <span class="i">memory</span> <span class="o">=</span>
   <span class="i">ObjectWhere</span>
     [
-      <span class="s">&quot;name&quot;</span> <span class="o">.</span><span class="o">=</span> <span class="i">StringThat</span> [<span class="i">IsNotEmpty</span>]
-      <span class="s">&quot;father&quot;</span> <span class="o">.</span><span class="o">=</span> <span class="i">Delay</span> (<span class="k">fun</span> () <span class="k">-&gt;</span> <span class="i">person</span>)
-      <span class="s">&quot;mother&quot;</span> <span class="o">.</span><span class="o">=</span> <span class="i">Delay</span> (<span class="k">fun</span> () <span class="k">-&gt;</span> <span class="i">person</span>)
+      <span class="s">&quot;subject&quot;</span> <span class="o">.</span><span class="o">=</span> <span class="i">StringThat</span> [<span class="i">IsNotEmpty</span>]
+      <span class="s">&quot;linkedMemory&quot;</span> <span class="o">.</span><span class="o">?=</span> <span class="i">Delay</span> (<span class="k">fun</span> () <span class="k">-&gt;</span> <span class="i">memory</span>)
     ]
 </code></pre></td>
 </tr>
