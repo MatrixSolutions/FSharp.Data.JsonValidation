@@ -1,7 +1,11 @@
 (*** hide ***)
 // This block of code is omitted in the generated HTML documentation. Use 
 // it to define helpers that you do not want to show in the documentation.
-#I "../../bin"
+#I "../../bin/FSharp.Data.JsonValidation/"
+#r "../../bin/FSharp.Data.JsonValidation/FSharp.Data.JsonValidation.dll"
+#r "../../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
+let looksLikeAnEmail (value: string) =
+  value.Contains "@" && value.Contains "." && value.Length > 3
 
 (**
 Introducing FSharp.Data.JsonValidation
@@ -16,7 +20,7 @@ Let's include the library (use `#r` if you're writing an fsx), also include `FSh
 #r "FSharp.Data.JsonValidation.dll"
 
 open FSharp.Data
-open FSharp.Data.JsonValidation
+open JsonValidation
 
 (**
 ## Define your schemas
@@ -24,6 +28,7 @@ open FSharp.Data.JsonValidation
 Next define some schemas that describe how the JSON you're expecting should look.
 Schemas are just values and can easily be combined.
 *)
+
 
 let someNumbers = ArrayWhose [ItemsMatch AnyNumber]
 
@@ -38,12 +43,12 @@ let person =
 (**
 where `looksLikeAnEmail` is a silly little helper for illustrative purposes (i.e. you probably
 don't want to use this in production code) that looks like
-*)
 
+```fsharp
 let looksLikeAnEmail (value: string) =
   value.Contains "@" && value.Contains "." && value.Length > 3
+```
 
-(**
 ## Validate some JSON!
 
 Lastly let's try some actual JSON!
@@ -89,13 +94,11 @@ validate person (JsonValue.Parse badEmail)
 ## What's going on here?
 
 We're defining two different schemas
-*)
-
+```fsharp
 let someNumbers = ...
 
 let person = ...
-
-(**
+```
 
 `someNumbers` is a simple schema that describes a JSON array whose items are any number.
 It will only be valid if, well, it's exactly that: an array containing number (or perhaps none).
