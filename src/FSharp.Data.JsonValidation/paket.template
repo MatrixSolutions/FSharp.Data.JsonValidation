@@ -1,0 +1,25 @@
+type project
+title
+    FSharp.Data.JsonValidation
+owners
+    softwaredevelopment@matrixformedia.com
+authors 
+    softwaredevelopment@matrixformedia.com
+projectUrl
+    https://github.com/MatrixSolutions/FSharp.Data.JsonValidation
+iconUrl
+    https://raw.githubusercontent.com/MatrixSolutions/FSharp.Data.JsonValidation/master/docs/files/img/logo.png
+licenseUrl
+    https://github.com/MatrixSolutions/FSharp.Data.JsonValidation/blob/master/LICENSE.txt
+requireLicenseAcceptance
+    false
+copyright
+    Copyright 2015
+tags
+    F# fsharp data json validation
+summary
+    Validate your JSON values using data structures. Inspired by [joi](https://github.com/hapijs/joi).
+description
+    Validate your JSON values using data structures. Inspired by [joi](https://github.com/hapijs/joi).
+
+
