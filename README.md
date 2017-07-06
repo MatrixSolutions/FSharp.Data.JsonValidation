@@ -19,5 +19,5 @@ Contributions are welcome! Feel free to open issues, submit PRs, fork, etc!!!
 
 ## Built By
 
-[Matrix Solutions](http://www.matrixformedia.com/)
+### [Matrix Solutions](http://www.matrixformedia.com/)
 ![Matrix Solutions Logo](./docsrc/files/img/logo-matrix-gray.png)
