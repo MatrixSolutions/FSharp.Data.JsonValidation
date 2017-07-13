@@ -1,5 +1,8 @@
 FSharp.Core
 FSharp.Data
+Expecto
+Expecto.BenchmarkDotNet
+Expecto.FsCheck
 group Test
 NUnit
 NUnit.Runners
