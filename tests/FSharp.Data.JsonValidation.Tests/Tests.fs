@@ -22,8 +22,8 @@ let tests =
   testList "FSharp.Data.JsonValidation tests" [
     
     testCase "the docs example works as written (a fat test, but bad code in docs is annoying)" <| fun _ -> 
-      let schema = ExactlyOneOf [JsonValue.String "hi"; JsonValue.Number 42M]
-      let value = JsonValue.String "goodbye"
+      let schema = ExactlyOneOf [toJsonString "hi"; toJsonNumber 42]
+      let value = toJsonString "goodbye"
 
       Expect.equal "Invalid \"Expected value to be one of [\"hi\"; 42] but was \"goodbye\"\"" (sprintf "%A" <| validate schema value) "there is an invalid result"
 
