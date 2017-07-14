@@ -70,6 +70,18 @@ example: schema to match exactly `null` or `"the answer"`
 let nullOrAnswer = ExactlyOneOf [JsonValue.Null; JsonValue.String "the answer"]
 
 (**
+#### Match anything but certain `JsonValue`s
+```fsharp
+AnythingBut of JsonValue list
+```
+*)
+
+(**
+example: schema to match anything _except_ for "foobar" or "spameggs"
+*)
+let noFoobarOrSpameggs = AnythingBut [JsonValue.String "foobar"; JsonValue.String "spameggs"]
+
+(**
 ## Literals
 *)
 

@@ -29,6 +29,7 @@ module public JsonValidation =
     | ArrayWhose of ArrayAttributes list
     | Exactly of JsonValue
     | ExactlyOneOf of JsonValue list
+    | AnythingBut of JsonValue list
     | Anything
     | Delay of (unit -> JsonSchema)
    
@@ -60,6 +61,11 @@ module public JsonValidation =
     match List.exists (fun expected -> expected = value) literals with
     | true ->  Valid
     | false -> Invalid <| sprintf "Expected value to be one of %A but was %A" literals value
+
+  let private isNoneOf literals value =
+    match List.tryFind (fun expected -> expected = value) literals with
+    | None ->  Valid
+    | Some value -> Invalid <| sprintf "Expected value to not be any of %A but was %A" literals value
 
   let private isExactly expected actual =
     match expected = actual with
@@ -96,6 +102,7 @@ module public JsonValidation =
         | invalid, StringThat _ -> Invalid <| sprintf "Expected a string, got %A" invalid
 
         | value, ExactlyOneOf literals -> isExactlyOneOf literals value
+        | value, AnythingBut literals -> isNoneOf literals value
         | value, Exactly literal -> isExactly literal value
 
         | JsonValue.Record properties, ObjectWhere propSchema -> propertiesMeetSchema properties propSchema
