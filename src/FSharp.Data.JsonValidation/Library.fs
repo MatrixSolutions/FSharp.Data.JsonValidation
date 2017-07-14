@@ -31,6 +31,7 @@ module public JsonValidation =
     | ExactlyOneOf of JsonValue list
     | AnythingBut of JsonValue list
     | Anything
+    | Not of JsonSchema
     | Delay of (unit -> JsonSchema)
    
   let nonEmptyString = StringThat [IsNotEmpty]
@@ -113,11 +114,18 @@ module public JsonValidation =
 
         | value, Either schemas -> validateEither value schemas
 
+        | value, Not schema -> negateValidation schema value
+
         | _, Anything -> Valid
 
         | value, Delay getSchema -> validate (getSchema ()) value
     with
     | ex -> Invalid <| ex.Message
+
+  and private negateValidation schema value =
+    match validate schema value with
+      | Valid -> Invalid <| sprintf "Expected %A not to match schema %A" value schema
+      | Invalid _ -> Valid
 
   and private requiredValuesMeetSchemas (requiredLookup : Map<string, JsonSchema>) props  =
     let formatErrorUnder = sprintf ".%s %s"
