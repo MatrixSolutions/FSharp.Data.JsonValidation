@@ -93,6 +93,15 @@ let ``ExactlyOneOf matches any of the values it's given`` () =
   invalid <| validate schema (JsonValue.String "hi2")
 
 [<Test>]
+let ``AnythingBut matches anything except for the literals given`` () =
+  let schema = AnythingBut [JsonValue.String "hi"; JsonValue.Number 42M]
+
+  invalid <| validate schema (JsonValue.String "hi")
+  invalid <| validate schema (JsonValue.Number 42M)
+  valid <| validate schema JsonValue.Null
+  valid <| validate schema (JsonValue.String "hi2")
+
+[<Test>]
 let ``a JSON number is AnyNumber`` () =
   valid <| validate AnyNumber (JsonValue.Number 42M)
 
