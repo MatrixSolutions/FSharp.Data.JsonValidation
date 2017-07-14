@@ -78,6 +78,20 @@ let ``Anything matches anything`` () =
   valid <| validate Anything (JsonValue.Record [||])
 
 [<Test>]
+let ``Not only validates when the given schema doesn't`` () =
+  invalid <| validate (Not AnyString) (JsonValue.String "hi")
+  valid <| validate (Not AnyString) (JsonValue.Number 42M)
+  valid <| validate (Not AnyString) (JsonValue.Array [||])
+  valid <| validate (Not AnyString) (JsonValue.Record [||])
+
+[<Test>]
+let ``Not negates itself`` () =
+  valid <| validate (Not (Not AnyString)) (JsonValue.String "hi")
+  invalid <| validate (Not (Not AnyString)) (JsonValue.Number 42M)
+  invalid <| validate (Not (Not AnyString)) (JsonValue.Array [||])
+  invalid <| validate (Not (Not AnyString)) (JsonValue.Record [||])
+
+[<Test>]
 let ``Exactly only matches exactly what it's given`` () =
   valid <| validate (Exactly <| JsonValue.String "hi") (JsonValue.String "hi")
   invalid <| validate (Exactly <| JsonValue.String "hi") (JsonValue.String "hi2")

@@ -82,6 +82,18 @@ example: schema to match anything _except_ for "foobar" or "spameggs"
 let noFoobarOrSpameggs = AnythingBut [JsonValue.String "foobar"; JsonValue.String "spameggs"]
 
 (**
+#### Match the opposite of a `JsonSchema`
+```fsharp
+Not of JsonSchema
+```
+*)
+
+(**
+example: schema to match anything that's not a string
+*)
+let nonString = Not AnyString
+
+(**
 ## Literals
 *)
 
