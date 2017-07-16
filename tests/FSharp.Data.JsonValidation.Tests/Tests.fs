@@ -198,6 +198,20 @@ let ``ArrayWhose [ItemsMatch schema] ensures items all match`` () =
   valid <| validate schema (JsonValue.Array [|JsonValue.Number 42M; JsonValue.Number 0M|])
 
 [<Test>]
+let ``when ArrayWhose [ItemsMatch schema] fails, it reports on the index of failure`` () =
+  let schema =
+    ObjectWhere
+      [
+        "b" .= ArrayWhose [ItemsMatch AnyNumber]
+      ]
+  
+  let result = validate schema (JsonValue.Parse """{ "b": [1, 2, "foo", 4] }""")
+
+  match result with
+    | Valid -> failwithf "Expected invalid"
+    | Invalid message -> Assert.That(message, Is.StringContaining ".b [2]")
+
+[<Test>]
 let ``Either [...] ensures any item matches`` () =
   let schema = Either [Exactly <| JsonValue.Number 42M; AnyString]
 

@@ -169,17 +169,19 @@ module public JsonValidation =
         else Invalid <| sprintf "Expected array to have exactly %d item(s), but it had %d" n items.Length
 
       | ItemsMatch schema::rest ->
-        match validateAll (Array.toList items) schema with
+        match validateAll 0 (Array.toList items) schema with
           | Valid -> arrayMeetsProperties items rest
           | Invalid error -> Invalid error
 
-  and private validateAll items schema =
+  and private validateAll i items schema =
+    let formatErrorUnder = sprintf "[%d] %s"
+
     match items with
       | [] -> Valid
       | item::rest ->
         match validate schema item with
-          | Valid -> validateAll rest schema
-          | Invalid error -> Invalid error
+          | Valid -> validateAll (i + 1) rest schema
+          | Invalid error -> mapInvalid (formatErrorUnder i) <| Invalid error
 
   and private validateEither value schemas  =
     let rec go errorAcc = function
