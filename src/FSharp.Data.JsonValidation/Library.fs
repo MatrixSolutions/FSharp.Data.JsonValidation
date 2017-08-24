@@ -23,6 +23,8 @@ module public JsonValidation =
   and JsonSchema =
     | AnyNumber
     | AnyString
+    | AnyArray
+    | AnyObject
     | StringThat of StringAttributes list
     | ObjectWhere of (KeyValidation * JsonSchema) list
     | Either of JsonSchema list
@@ -108,9 +110,13 @@ module public JsonValidation =
 
         | JsonValue.Record properties, ObjectWhere propSchema -> propertiesMeetSchema properties propSchema
         | invalid, ObjectWhere _ -> Invalid <| sprintf "Expected an object, got %A" invalid
+        | JsonValue.Record _, AnyObject -> Valid
+        | invalid, AnyObject -> Invalid <| sprintf "Expected an object, got %A" invalid
 
         | JsonValue.Array items, ArrayWhose properties -> arrayMeetsProperties items properties
         | invalid, ArrayWhose _ -> Invalid <| sprintf "Expected an array, got %A" invalid
+        | JsonValue.Array _, AnyArray -> Valid
+        | invalid, AnyArray -> Invalid <| sprintf "Expected an array, got %A" invalid
 
         | value, Either schemas -> validateEither value schemas
 
