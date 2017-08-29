@@ -124,6 +124,36 @@ let ``something other than a JSON number is not AnyNumber`` () =
   invalid <| validate AnyNumber (JsonValue.String "Foo")
 
 [<Test>]
+let ``a positive JSON number IsPositive`` () =
+  valid <| validate (NumberThat [IsPositive]) (JsonValue.Number 42M)
+  invalid <| validate (NumberThat [IsPositive]) (JsonValue.Number 0M)
+  invalid <| validate (NumberThat [IsPositive]) (JsonValue.Number -42M)
+
+[<Test>]
+let ``a negative JSON number IsNegative`` () =
+  invalid <| validate (NumberThat [IsNegative]) (JsonValue.Number 42M)
+  invalid <| validate (NumberThat [IsNegative]) (JsonValue.Number 0M)
+  valid <| validate (NumberThat [IsNegative]) (JsonValue.Number -42M)
+
+[<Test>]
+let ``a non-negative JSON number IsNonNegative`` () =
+  valid <| validate (NumberThat [IsNonNegative]) (JsonValue.Number 42M)
+  valid <| validate (NumberThat [IsNonNegative]) (JsonValue.Number 0M)
+  invalid <| validate (NumberThat [IsNonNegative]) (JsonValue.Number -42M)
+
+[<Test>]
+let ``a JSON number that is greater than another number IsGreaterThan`` () =
+  valid <| validate (NumberThat [IsGreaterThan 10M]) (JsonValue.Number 42M)
+  invalid <| validate (NumberThat [IsGreaterThan 10M]) (JsonValue.Number 0M)
+  invalid <| validate (NumberThat [IsGreaterThan 10M]) (JsonValue.Number 10M)
+
+[<Test>]
+let ``a JSON number that is less than another number IsLessThan`` () =
+  invalid <| validate (NumberThat [IsLessThan 10M]) (JsonValue.Number 42M)
+  valid <| validate (NumberThat [IsLessThan 10M]) (JsonValue.Number 0M)
+  invalid <| validate (NumberThat [IsLessThan 10M]) (JsonValue.Number 10M)
+
+[<Test>]
 let ``a JSON string is AnyString`` () =
   valid <| validate AnyString (JsonValue.String "Hi")
 
