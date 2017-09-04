@@ -74,7 +74,7 @@ module public JsonValidation =
       | num, IsNonNegative::rest when num >= (decimal 0) -> numberMeetsProperties num rest
       | num, IsGreaterThan n::rest when num > n -> numberMeetsProperties num rest
       | num, IsLessThan n::rest when num < n -> numberMeetsProperties num rest
-      | num, rest -> Invalid <| sprintf "Expected number %f to meet %A condition(s)" num rest
+      | num, prop::_ -> Invalid <| sprintf "Expected number %f to meet %A property" num prop
 
   let private isExactlyOneOf literals value =
     match List.exists (fun expected -> expected = value) literals with

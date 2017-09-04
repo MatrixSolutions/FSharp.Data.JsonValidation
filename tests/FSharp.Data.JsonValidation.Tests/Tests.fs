@@ -154,6 +154,14 @@ let ``a JSON number that is less than another number IsLessThan`` () =
   invalid <| validate (NumberThat [IsLessThan 10M]) (JsonValue.Number 10M)
 
 [<Test>]
+let ``a JSON number can have multiple NumberThat properties`` () =
+  valid <| validate (NumberThat [IsGreaterThan 0M; IsPositive]) (JsonValue.Number 42M)
+  valid <| validate (NumberThat [IsGreaterThan 0M; IsPositive; IsNonNegative]) (JsonValue.Number 42M)
+  invalid <| validate (NumberThat [IsLessThan 0M; IsNegative]) (JsonValue.Number 42M)
+  invalid <| validate (NumberThat [IsNegative; IsPositive]) (JsonValue.Number 42M)  
+  invalid <| validate (NumberThat [IsNonNegative; IsGreaterThan -1M; IsNegative]) (JsonValue.Number 0M)
+
+[<Test>]
 let ``a JSON string is AnyString`` () =
   valid <| validate AnyString (JsonValue.String "Hi")
 
