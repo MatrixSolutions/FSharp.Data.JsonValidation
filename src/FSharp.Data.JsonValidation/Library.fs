@@ -14,6 +14,13 @@ module public JsonValidation =
     | IsNotEmpty
     | MeetsCriteria of string*(string -> bool)
 
+  type NumberAttributes =
+    | IsPositive
+    | IsNegative
+    | IsNonNegative
+    | IsGreaterThan of decimal
+    | IsLessThan of decimal
+
   type ArrayAttributes =
     | LengthIsAtLeast of int
     | LengthIsAtMost of int
@@ -22,6 +29,7 @@ module public JsonValidation =
 
   and JsonSchema =
     | AnyNumber
+    | NumberThat of NumberAttributes list
     | AnyString
     | StringThat of StringAttributes list
     | ObjectWhere of (KeyValidation * JsonSchema) list
@@ -58,6 +66,16 @@ module public JsonValidation =
         then stringMeetsProperties str rest
         else Invalid <| sprintf "Expected string %A to %s" str description
 
+  let rec private numberMeetsProperties num props =
+    match num, props with
+      | _, [] -> Valid
+      | num, IsPositive::rest when num > (decimal 0) -> numberMeetsProperties num rest
+      | num, IsNegative::rest when num < (decimal 0) -> numberMeetsProperties num rest
+      | num, IsNonNegative::rest when num >= (decimal 0) -> numberMeetsProperties num rest
+      | num, IsGreaterThan n::rest when num > n -> numberMeetsProperties num rest
+      | num, IsLessThan n::rest when num < n -> numberMeetsProperties num rest
+      | num, prop::_ -> Invalid <| sprintf "Expected number %f to meet %A property" num prop
+
   let private isExactlyOneOf literals value =
     match List.exists (fun expected -> expected = value) literals with
     | true ->  Valid
@@ -93,9 +111,12 @@ module public JsonValidation =
   let rec validate (schema : JsonSchema) (json : JsonValue) =
     try
       match json, schema with
-        | JsonValue.Number _, AnyNumber
-        | JsonValue.Float _, AnyNumber -> Valid
-        | invalid, AnyNumber -> Invalid <| sprintf "Expected a number, got %A" invalid
+        | JsonValue.Float _, AnyNumber
+        | JsonValue.Number _, AnyNumber -> Valid
+        | JsonValue.Number n, NumberThat properties -> numberMeetsProperties n properties 
+        | JsonValue.Float n, NumberThat properties -> numberMeetsProperties (decimal n) properties
+        | invalid, AnyNumber
+        | invalid, NumberThat _ -> Invalid <| sprintf "Expected a number, got %A" invalid
 
         | JsonValue.String _,  AnyString -> Valid
         | invalid, AnyString -> Invalid <| sprintf "Expected a string, got %A" invalid
