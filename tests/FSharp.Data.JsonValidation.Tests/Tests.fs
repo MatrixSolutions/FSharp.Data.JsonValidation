@@ -183,6 +183,14 @@ let ``StringThat [IsNotEmpty] matches non-empty strings`` () =
   invalid <| validate (StringThat [IsNotEmpty]) (JsonValue.String "")
 
 [<Test>]
+let ``AnyObject works`` () =
+  let schema = AnyObject
+
+  valid <| validate schema (JsonValue.Record [||])
+  invalid <| validate schema (JsonValue.Number 42M)
+  valid <| validate schema (JsonValue.Record [| "foo", JsonValue.String "bar" |])
+
+[<Test>]
 let ``ObjectWhere [...] must have required keys that match the given schema`` () =
   let schema = ObjectWhere [ "foo" .= AnyString ]
 
@@ -217,6 +225,14 @@ let ``ArrayWhose [LengthIsAtLeast n] works`` () =
   invalid <| validate schema (JsonValue.Array <| Array.replicate 3 JsonValue.Null)
   valid <| validate schema (JsonValue.Array <| Array.replicate 4 JsonValue.Null)
   valid <| validate schema (JsonValue.Array <| Array.replicate 5 JsonValue.Null)
+
+[<Test>]
+let ``AnyArray works`` () =
+  let schema = AnyArray
+
+  valid <| validate schema (JsonValue.Array [||])
+  invalid <| validate schema (JsonValue.Number 42M)
+  valid <| validate schema (JsonValue.Array [|JsonValue.String "foo"; JsonValue.Number 432M|])
 
 [<Test>]
 let ``ArrayWhose [LengthIsAtMost n] works`` () =
