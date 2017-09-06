@@ -71,9 +71,9 @@ module public JsonValidation =
   let rec private numberMeetsProperties num props =
     match num, props with
       | _, [] -> Valid
-      | num, IsPositive::rest when num > (decimal 0) -> numberMeetsProperties num rest
-      | num, IsNegative::rest when num < (decimal 0) -> numberMeetsProperties num rest
-      | num, IsNonNegative::rest when num >= (decimal 0) -> numberMeetsProperties num rest
+      | num, IsPositive::rest when num > 0M -> numberMeetsProperties num rest
+      | num, IsNegative::rest when num < 0M -> numberMeetsProperties num rest
+      | num, IsNonNegative::rest when num >= 0M -> numberMeetsProperties num rest
       | num, IsGreaterThan n::rest when num > n -> numberMeetsProperties num rest
       | num, IsLessThan n::rest when num < n -> numberMeetsProperties num rest
       | num, prop::_ -> Invalid <| sprintf "Expected number %f to meet %A property" num prop

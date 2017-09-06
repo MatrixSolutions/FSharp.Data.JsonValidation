@@ -105,6 +105,28 @@ let nonString = Not AnyString
 AnyNumber
 
 (**
+#### Validate a number with specific criteria
+```fsharp
+NumberThat of NumberAttributes list
+```
+*)
+(**
+Where `NumberAttributes` can be any valid combination of
+
+  - `IsPositive` - ensure that the number is positive (greater than 0).
+
+  - `IsNegative` - ensure that the number is negative (less than 0).
+
+  - `IsNonNegative` - ensure that the number is 0 or greater.
+
+  - `IsGreaterThan` - ensure that the number is greater than a given number.
+
+  - `IsLessThan` - ensure that the number is less than a given number.
+
+example: schema to match that a number is positive, greater than 10 and less than 50
+*)
+let numberSchema = NumberThat [IsPositive; IsGreaterThan 10M; IsLessThan 50M]
+(**
 ### Strings
 
 #### Validate that JSON is any string
