@@ -18,6 +18,7 @@ module public JsonValidation =
     | IsPositive
     | IsNegative
     | IsNonNegative
+    | IsIntegral
     | IsGreaterThan of decimal
     | IsLessThan of decimal
 
@@ -74,6 +75,7 @@ module public JsonValidation =
       | num, IsPositive::rest when num > 0M -> numberMeetsProperties num rest
       | num, IsNegative::rest when num < 0M -> numberMeetsProperties num rest
       | num, IsNonNegative::rest when num >= 0M -> numberMeetsProperties num rest
+      | num, IsIntegral::rest when num % 1M = 0M -> numberMeetsProperties num rest
       | num, IsGreaterThan n::rest when num > n -> numberMeetsProperties num rest
       | num, IsLessThan n::rest when num < n -> numberMeetsProperties num rest
       | num, prop::_ -> Invalid <| sprintf "Expected number %f to meet %A property" num prop
