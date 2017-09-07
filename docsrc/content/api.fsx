@@ -119,7 +119,7 @@ Where `NumberAttributes` can be any valid combination of
 
   - `IsNonNegative` - ensure that the number is 0 or greater.
 
-  - `IsIntegral` - ensure that a number is an integral number.
+  - `IsIntegral` - ensure that the number is an integral number.
 
   - `IsGreaterThan` - ensure that the number is greater than a given number.
 
