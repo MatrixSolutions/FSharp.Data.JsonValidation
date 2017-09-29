@@ -142,6 +142,15 @@ let ``a non-negative JSON number IsNonNegative`` () =
   invalid <| validate (NumberThat [IsNonNegative]) (JsonValue.Number -42M)
 
 [<Test>]
+let ``an integral JSON number IsIntegral`` () =
+  valid <| validate (NumberThat [IsIntegral]) (JsonValue.Number 42M) 
+  valid <| validate (NumberThat [IsIntegral]) (JsonValue.Number 0M)
+  valid <| validate (NumberThat [IsIntegral]) (JsonValue.Number -42M)
+  invalid <| validate (NumberThat [IsIntegral]) (JsonValue.Number 42.94M)
+  invalid <| validate (NumberThat [IsIntegral]) (JsonValue.Number -42.94M)
+  valid <| validate (NumberThat [IsIntegral]) (JsonValue.Float 0.0)
+
+[<Test>]
 let ``a JSON number that is greater than another number IsGreaterThan`` () =
   valid <| validate (NumberThat [IsGreaterThan 10M]) (JsonValue.Number 42M)
   invalid <| validate (NumberThat [IsGreaterThan 10M]) (JsonValue.Number 0M)
@@ -155,7 +164,7 @@ let ``a JSON number that is less than another number IsLessThan`` () =
 
 [<Test>]
 let ``a JSON number can have multiple NumberThat properties`` () =
-  valid <| validate (NumberThat [IsGreaterThan 0M; IsPositive]) (JsonValue.Number 42M)
+  valid <| validate (NumberThat [IsGreaterThan 0M; IsPositive; IsIntegral]) (JsonValue.Number 42M)
   valid <| validate (NumberThat [IsGreaterThan 0M; IsPositive; IsNonNegative]) (JsonValue.Number 42M)
   invalid <| validate (NumberThat [IsLessThan 0M; IsNegative]) (JsonValue.Number 42M)
   invalid <| validate (NumberThat [IsNegative; IsPositive]) (JsonValue.Number 42M)
