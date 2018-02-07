@@ -308,6 +308,7 @@ let ``StringThat [IsAlphaNumeric] works`` () =
 
   valid <| validate schema (JsonValue.String "12345")
   valid <| validate schema (JsonValue.String "foobar")
+  valid <| validate schema (JsonValue.String "foo123bar456")
   
   invalid <| validate schema (JsonValue.String String.Empty) 
   invalid <| validate schema (JsonValue.String "foo bar")
