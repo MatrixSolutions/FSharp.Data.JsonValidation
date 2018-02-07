@@ -3,6 +3,7 @@ module FSharp.Data.JsonValidation.Tests
 open FSharp.Data
 open FSharp.Data.JsonValidation
 open NUnit.Framework
+open System
 
 let valid = function
   | Valid _ -> ()
@@ -34,7 +35,7 @@ let ``the tutorial example works as written (a fat test, but bad code in docs is
       [
         "name" .= StringThat [IsNotEmpty]
         "favoriteNumbers" .= someNumbers
-        "email" .?= StringThat [MeetsCriteria ("be an email", looksLikeAnEmail)]
+        "email" .?= StringThat [IsEmail]
       ]
 
   let okayPerson =
@@ -68,7 +69,7 @@ let ``the tutorial example works as written (a fat test, but bad code in docs is
     }
     """
 
-  Assert.AreEqual("Invalid \".email Expected string \"not-really-an-email\" to be an email\"", sprintf "%A" <| validate person (JsonValue.Parse badEmail))
+  Assert.AreEqual("Invalid \".email Expected not-really-an-email to be a valid email address\"", sprintf "%A" <| validate person (JsonValue.Parse badEmail))
 
 [<Test>]
 let ``Anything matches anything`` () =
@@ -259,6 +260,86 @@ let ``ArrayWhose [LengthIsExactly n] works`` () =
   valid <| validate schema (JsonValue.Array <| Array.replicate 4 JsonValue.Null)
   invalid <| validate schema (JsonValue.Array <| Array.replicate 5 JsonValue.Null)
 
+[<Test>]
+let ``StringThat [IsLowerCase] works`` () =
+  let schema = StringThat [IsLowerCase]
+
+  valid <| validate schema (JsonValue.String "this is a test")
+  invalid <| validate schema (JsonValue.String "THIS IS A TEST")
+  invalid <| validate schema (JsonValue.String "This is a test")
+  invalid <| validate schema (JsonValue.String "this is a tesT")
+
+  invalid <| validate (StringThat [IsLowerCase; IsUpperCase]) (JsonValue.String "this is a test")
+
+[<Test>]
+let ``StringThat [IsUpperCase] works`` () =
+  let schema = StringThat [IsUpperCase]
+
+  invalid <| validate schema (JsonValue.String "this is a test")
+  valid <| validate schema (JsonValue.String "THIS IS A TEST")
+  invalid <| validate schema (JsonValue.String "This is a test")
+  invalid <| validate schema (JsonValue.String "this is a tesT")
+
+  invalid <| validate (StringThat [IsLowerCase; IsUpperCase]) (JsonValue.String "this is a test")
+
+[<Test>]
+let ``StringThat [MatchesCaseInsensitive] works`` () =
+  let schema = StringThat [MatchesCaseInsensitive "this is a test"]
+
+  valid <| validate schema (JsonValue.String "this is a test")
+  valid <| validate schema (JsonValue.String "THIS IS A TEST")
+  valid <| validate schema (JsonValue.String "tHiS iS a TeSt")
+
+  invalid <| validate schema (JsonValue.String "Completely different string")
+
+[<Test>]
+let ``StringThat [IsEmail] works`` () =
+  let schema = StringThat [IsEmail]
+ 
+  valid <| validate schema (JsonValue.String "test@example.com")
+  invalid <| validate schema (JsonValue.String "hello")
+  invalid <| validate schema (JsonValue.String "test@com")
+  invalid <| validate schema (JsonValue.String "test.com")
+  invalid <| validate schema (JsonValue.String "@.com")
+
+[<Test>] 
+let ``StringThat [IsAlphaNumeric] works`` () =
+  let schema = StringThat [IsAlphaNumeric]
+
+  valid <| validate schema (JsonValue.String "12345")
+  valid <| validate schema (JsonValue.String "foobar")
+  
+  invalid <| validate schema (JsonValue.String String.Empty) 
+  invalid <| validate schema (JsonValue.String "foo bar")
+  invalid <| validate schema (JsonValue.String "foo_bar")
+  invalid <| validate schema (JsonValue.String "H3LL0 W0RLD!")
+  invalid <| validate schema (JsonValue.String "@(*#@(")
+
+[<Test>]
+let ``StringThat [IsGuid] works`` () = 
+  let schema = StringThat [IsGuid]
+  let guid = Guid.NewGuid()
+
+  valid <| validate schema (JsonValue.String <| string guid)
+  invalid <| validate schema (JsonValue.String "foo bar")
+
+[<Test>]
+let ``StringThat [IsMinimumLength] works`` () =
+  let schema n = StringThat [IsMinimumLength n]
+
+  valid <| validate (schema 7) (JsonValue.String "foo bar")
+  invalid <| validate (schema 8) (JsonValue.String "foo bar")
+  valid <| validate (schema 6) (JsonValue.String "foo bar")
+  invalid <| validate (schema -2) (JsonValue.String "foo bar")
+
+[<Test>]
+let ``StringThat [isMaximumLength] works`` () =
+  let schema n = StringThat [IsMaximumLength n]
+
+  valid <| validate (schema 7) (JsonValue.String "foo bar")
+  valid <| validate (schema 8) (JsonValue.String "foo bar")
+  invalid <| validate (schema 6) (JsonValue.String "foo bar")
+  invalid <| validate (schema -2) (JsonValue.String "foo bar") 
 
 [<Test>]
 let ``ArrayWhose [ItemsMatch schema] ensures items all match`` () =
