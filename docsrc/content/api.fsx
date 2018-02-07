@@ -87,7 +87,9 @@ let nonString = Not AnyString
 
 #### Validate that JSON is any number
 
+```fsharp
 AnyNumber
+```
 
 
 #### Validate a number with specific criteria
@@ -118,7 +120,9 @@ let numberSchema = NumberThat [IsPositive; IsGreaterThan 10M; IsLessThan 50M]
 
 #### Validate that JSON is any string
 
+```fsharp
 AnyString
+```
 
 
 #### Validate a string with specific criteria
