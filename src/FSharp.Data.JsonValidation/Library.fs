@@ -119,7 +119,7 @@ module public JsonValidation =
     matchesRegex "^[a-zA-Z0-9]+$"
 
   and private isValidGuid =
-    Guid.TryParse >> function | true, _ -> true | _ -> false
+    Guid.TryParse >> fst
 
   and private isMinimumLength len str =
     match len with
