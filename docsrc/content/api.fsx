@@ -1,103 +1,116 @@
-# API Documentation
+(*** hide ***)
+// This block of code is omitted in the generated HTML documentation. Use 
+// it to define helpers that you do not want to show in the documentation.
+#I "../../bin/FSharp.Data.JsonValidation/"
+#r "../../bin/FSharp.Data.JsonValidation/FSharp.Data.JsonValidation.dll"
+#r "../../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
+open FSharp.Data
+open JsonValidation
+let ``...`` _ _ = Valid
 
+(**
+# API Documentation
+*)
+
+(**
 ## `validate`
 The `validate` function checks a schema against JSON (FSharp.Data.JsonValue) returning
 a `ValidationResult`.
+*)
 
-```fsharp
-let validate : JsonSchema -> JsonValue -> ValidationResult
-```
+let valiate : JsonSchema -> JsonValue -> ValidationResult = ``...``
 
+(**
 A `ValidationResult` is simply defined as
 
-```fsharp
+*)
+
 type ValidationResult =
   | Valid
   | Invalid of string
-```
+
+(**
 See [the tutorial](tutorial.html) for a full example.
 
 **Below are the many ways to define `JsonSchema`s.**
+*)
 
-
+(**
 ### Anything
 
 #### A `JsonSchema` that validates against anything
 Useful for those times when you just don't care, or no actual structure is expected.
-
+*)
 Anything
 
-
+(**
 ### Exact Matches
 
 #### Match _exactly_ a `JsonValue`
 ```fsharp
 Exactly of JsonValue
 ```
+*)
 
-
-
-Example: schema to match exactly `42`
-
-```fsharp 
+(**
+example: schema to match exactly `42`
+*)
 let schema42 = Exactly (JsonValue.Number 42M)
-```
 
+(**
 #### Match exactly one of a few possible `JsonValue`s
 ```fsharp
 ExactlyOneOf of JsonValue list
 ```
+*)
 
-
-
-Example: schema to match exactly `null` or `"the answer"`
-
-```fsharp
+(**
+example: schema to match exactly `null` or `"the answer"`
+*)
 let nullOrAnswer = ExactlyOneOf [JsonValue.Null; JsonValue.String "the answer"]
-```
 
+(**
 #### Match anything but certain `JsonValue`s
 ```fsharp
 AnythingBut of JsonValue list
 ```
+*)
 
-Example: schema to match anything _except_ for "foobar" or "spameggs"
-
-```fsharp
+(**
+example: schema to match anything _except_ for "foobar" or "spameggs"
+*)
 let noFoobarOrSpameggs = AnythingBut [JsonValue.String "foobar"; JsonValue.String "spameggs"]
-```
 
+(**
 #### Match the opposite of a `JsonSchema`
 ```fsharp
 Not of JsonSchema
 ```
+*)
 
-
-
-Example: schema to match anything that's not a string
-```fsharp
+(**
+example: schema to match anything that's not a string
+*)
 let nonString = Not AnyString
-```
 
+(**
 ## Literals
+*)
 
-
-
+(**
 ### Numbers
 
 #### Validate that JSON is any number
-
-```fsharp
+*)
 AnyNumber
-```
 
-
+(**
 #### Validate a number with specific criteria
 ```fsharp
 NumberThat of NumberAttributes list
 ```
-
-
+*)
+(**
 Where `NumberAttributes` can be any valid combination of
 
   - `IsPositive` - ensure that the number is positive (greater than 0).
@@ -112,54 +125,52 @@ Where `NumberAttributes` can be any valid combination of
 
   - `IsLessThan` - ensure that the number is less than a given number.
 
-Example: schema to match that a number is positive, greater than 10 and less than 50
-```fsharp
+example: schema to match that a number is positive, greater than 10 and less than 50
+*)
 let numberSchema = NumberThat [IsPositive; IsGreaterThan 10M; IsLessThan 50M]
-```
+(**
 ### Strings
 
 #### Validate that JSON is any string
-
-```fsharp
+*)
 AnyString
-```
 
-
+(**
 #### Validate a string with specific criteria
 ```fsharp
 StringThat of StringAttributes list
 ```
+*)
+(**
++Where `StringAttributes` can be any combination of:
++  - `IsNotEmpty` - ensure the string has length
++  - `IsLowerCase` - ensure the string contains all lowercase alphabetical characters 
++  - `IsUpperCase` - ensure the string contains all uppercase alphabetical characters
++  - `IsEmail` - ensure the string is a valid email address
++  - `IsAlpaNumberic` - ensure the string contains only alpha numeric characters (no spaces or underscores)
++  - `IsGuid` - ensure the string is a valid guid
++  - `IsMinimumLength n` - ensure the string is NOT less than `n`
++  - `IsMaximumLength n` - ensure the string is NOT greater than `n`
++  - `MatchesCaseInsensitive str` - ensure that the string matches the given string, regardless of case
++  - `MeetsCriteria of Description*Predicate` - ensure the string meets an arbitrary condition where
+ 	 
+-    - `string` is a description of the criteria, useful for error messages	+  - `Description` is a description of the criteria, useful for error messages
+ 	 
+-    - `(string -> bool)` is the actual predicate (function returning bool) to check	+  - `Predicate` is the actual predicate `(string -> bool)` to check
+ 	 
+-example: schema to match "long" strings that contain at least one dash	+Example: schema to match "long" strings that contain at least one dash
+-*)
+let longDashing = StringThat [IsMaximumLength 100; IsAlpaNumberic]
 
-
-Where `StringAttributes` can be any combination of:
-  - `IsNotEmpty` - ensure the string has length
-  - `IsLowerCase` - ensure the string contains all lowercase alphabetical characters 
-  - `IsUpperCase` - ensure the string contains all uppercase alphabetical characters
-  - `IsEmail` - ensure the string is a valid email address
-  - `IsAlpaNumberic` - ensure the string contains only alpha numeric characters (no spaces or underscores)
-  - `IsGuid` - ensure the string is a valid guid
-  - `IsMinimumLength n` - ensure the string is NOT less than `n`
-  - `IsMaximumLength n` - ensure the string is NOT greater than `n`
-  - `MatchesCaseInsensitive str` - ensure that the string matches the given string, regardless of case
-  - `MeetsCriteria of Description*Predicate` - ensure the string meets an arbitrary condition where
-
-  - `Description` is a description of the criteria, useful for error messages
-
-  - `Predicate` is the actual predicate `(string -> bool)` to check
-
-Example: schema to match "long" strings that contain at least one dash
-```fsharp
-let longDashing = StringThat [MeetsCriteria ("long and dashing", fun s -> s.Length > 1000 && s.Contains "-")]
-```
-
+(**
 ### Objects
 
 #### Validate an object with specific keys
 ```fsharp
 ObjectWhere of (KeyValidation * JsonSchema) list
 ```
-
-
+*)
+(**
 
 Where `KeyValidation*JsonSchema` specifies key-value schemas such that
 
@@ -174,8 +185,8 @@ Note that `( .= )` and `( .?= )` are super useful for defining object schemas wh
   - `( .?= )` indicates an optional key (can be left out) whose value, if the key is given,
     must abide the given schema and
 
-Example: schemas to match addresses and people who may or may not have an address
-```fsharp
+example: schemas to match addresses and people who may or may not have an address
+*)
 let address = 
   ObjectWhere
     [
@@ -190,16 +201,16 @@ let person =
       "name" .= StringThat [IsNotEmpty]
       "address" .?= address
     ]
-```
 
+(**
 ### Arrays
 
 #### Validate an array
 ```fsharp
 ArrayWhose of ArrayAttributes list
 ```
-
-
+*)
+(**
 
 Where `ArrayAttributes` can be any combination of
 
@@ -212,27 +223,27 @@ Where `ArrayAttributes` can be any combination of
 
   - `ItemsMatch of JsonSchema` specifies the schema of the array's items
 
-Example: schema to match an array of exactly 42 numbers
-```fsharp
+example: schema to match an array of exactly 42 numbers
+*)
 let numbers42 = ArrayWhose  [LengthIsExactly 42; ItemsMatch AnyNumber]
-```
 
+(**
 ### Alternatives
 
 #### Given multiple schemas, validate that _any_ match
 ```fsharp
 Either of JsonSchema list
 ```
-
-
+*)
+(**
 
 Where `JsonSchema` can be any other `JsonSchema` described hereabouts
 
-Example: schema to match either a string, number or `null`
-```fsharp
+example: schema to match either a string, number or `null`
+*)
 let stringOrNumber = Either [AnyString; AnyNumber; Exactly JsonValue.Null]
-```
 
+(**
 ### Laziness
 
 #### Match a schema, lazily
@@ -240,20 +251,18 @@ Useful when your JSON types may contain themselves
 ```fsharp
 Delay of (unit -> JsonSchema)
 ```
-
-
+*)
+(**
 
 Where `unit -> JsonSchema` is a function that just returns another
 `JsonSchema` to validate.
 
-Example: schema to match a memory that may link to a memory that may link to a memory
+example: schema to match a memory that may link to a memory that may link to a memory
 that may lin...
-
-```fsharp
+*)
 let rec memory =
   ObjectWhere
     [
       "subject" .= StringThat [IsNotEmpty]
       "linkedMemory" .?= Delay (fun () -> memory)
     ]
-```
