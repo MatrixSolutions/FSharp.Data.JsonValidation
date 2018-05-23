@@ -158,7 +158,7 @@ StringThat of StringAttributes list
  	 
 -    - `(string -> bool)` is the actual predicate (function returning bool) to check	+  - `Predicate` is the actual predicate `(string -> bool)` to check
  	 
--example: schema to match "long" strings that contain at least one dash	+Example: schema to match "long" strings that contain at least one dash
+-example: schema to match strings that are not longer than 100 characters and only contain alphanumeric characters.
 -*)
 let longDashing = StringThat [IsMaximumLength 100; IsAlpaNumberic]
 
