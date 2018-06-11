@@ -142,19 +142,25 @@ StringThat of StringAttributes list
 ```
 *)
 (**
-Where `StringAttributes` can be any combination of
-
-  - `IsNotEmpty` - ensure the string has length
-
-  - `MeetsCriteria of string*(string -> bool)` - ensure the string meets an arbitrary condition where
-
-    - `string` is a description of the criteria, useful for error messages
-
-    - `(string -> bool)` is the actual predicate (function returning bool) to check
-
-example: schema to match "long" strings that contain at least one dash
-*)
-let longDashing = StringThat [MeetsCriteria ("long and dashing", fun s -> s.Length > 1000 && s.Contains "-")]
++Where `StringAttributes` can be any combination of:
++  - `IsNotEmpty` - ensure the string has length
++  - `IsLowerCase` - ensure the string contains all lowercase alphabetical characters 
++  - `IsUpperCase` - ensure the string contains all uppercase alphabetical characters
++  - `IsEmail` - ensure the string is a valid email address
++  - `IsAlpaNumberic` - ensure the string contains only alpha numeric characters (no spaces or underscores)
++  - `IsGuid` - ensure the string is a valid guid
++  - `IsMinimumLength n` - ensure the string is NOT less than `n`
++  - `IsMaximumLength n` - ensure the string is NOT greater than `n`
++  - `MatchesCaseInsensitive str` - ensure that the string matches the given string, regardless of case
++  - `MeetsCriteria of Description*Predicate` - ensure the string meets an arbitrary condition where
+ 	 
+-    - `string` is a description of the criteria, useful for error messages	+  - `Description` is a description of the criteria, useful for error messages
+ 	 
+-    - `(string -> bool)` is the actual predicate (function returning bool) to check	+  - `Predicate` is the actual predicate `(string -> bool)` to check
+ 	 
+-example: schema to match strings that are not longer than 100 characters and only contain alphanumeric characters.
+-*)
+let longDashing = StringThat [IsMaximumLength 100; IsAlpaNumberic]
 
 (**
 ### Objects

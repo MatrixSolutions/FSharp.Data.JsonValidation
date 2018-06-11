@@ -1,6 +1,7 @@
 namespace FSharp.Data
 
 module public JsonValidation =
+  open System
 
   type ValidationResult =
     | Valid
@@ -9,10 +10,21 @@ module public JsonValidation =
   type KeyValidation =
     | Required of string
     | Optional of string
-
+ 
+  type private Description = string
+  type private Predicate = string->bool
+  
   type StringAttributes =
     | IsNotEmpty
-    | MeetsCriteria of string*(string -> bool)
+    | IsLowerCase
+    | IsUpperCase
+    | IsEmail
+    | IsAlphaNumeric
+    | IsGuid
+    | IsMinimumLength of int
+    | IsMaximumLength of int
+    | MatchesCaseInsensitive of string
+    | MeetsCriteria of Description*Predicate
 
   type NumberAttributes =
     | IsPositive
@@ -45,10 +57,18 @@ module public JsonValidation =
     | Not of JsonSchema
     | Delay of (unit -> JsonSchema)
    
+     
+  let private (|PositiveInteger|NonPositiveInteger|) n =
+    if n > -1
+    then PositiveInteger
+    else NonPositiveInteger
+
   let nonEmptyString = StringThat [IsNotEmpty]
 
   let inline (.=) key (schema: JsonSchema) = Required key, schema
   let inline (.?=) key (schema: JsonSchema) = Optional key, schema
+  let private (!<) (num1: int) (num2: int) = not <| (num1 < num2)
+  let private (!>) (num1: int) (num2: int) = not <| (num1 > num2)
 
   let inline (-->) choice1 getChoice2 =
     match choice1 with
@@ -59,16 +79,58 @@ module public JsonValidation =
     | Invalid v -> Invalid <| fn v
     | Valid -> Valid
 
+  let private matchesRegex regex str =
+    let r = Text.RegularExpressions.Regex(regex)
+    r.IsMatch(str)
+
   let rec private stringMeetsProperties str props =
     match str, props with
       | _, [] -> Valid
       | "", (IsNotEmpty::_) -> Invalid "Expected string to not be empty"
       | str, (IsNotEmpty::rest) -> stringMeetsProperties str rest
-      | str, (MeetsCriteria (description, pred)::rest) ->
-        if pred str
-        then stringMeetsProperties str rest
-        else Invalid <| sprintf "Expected string %A to %s" str description
+      | str, (IsLowerCase::rest) -> isPropertyValid isLowerCase str rest "be completely lowercase"
+      | str, (IsUpperCase::rest) -> isPropertyValid isUpperCase str rest "be completely uppercase"
+      | str, (IsEmail::rest) -> isPropertyValid isEmail str rest "be a valid email address"
+      | str, (IsAlphaNumeric::rest) -> isPropertyValid isAlphaNumeric str rest "be alpha numeric"
+      | str, (IsGuid::rest) -> isPropertyValid isValidGuid str rest "be a valid Guid"
+      | str, (IsMinimumLength len::rest) -> isPropertyValid (isMinimumLength len) str rest (sprintf "be at least %d" len)
+      | str, (IsMaximumLength len::rest) -> isPropertyValid (isMaximumLength len) str rest (sprintf "be at most %d" len)
+      | str, (MatchesCaseInsensitive givenStr::rest) -> isPropertyValid (caseInsensitive givenStr) str rest "be case insensitive" 
+      | str, (MeetsCriteria (description, pred)::rest) -> isPropertyValid pred str rest description
 
+  and private isPropertyValid f str rest description =
+     match f str with 
+      | true -> stringMeetsProperties str rest
+      | false -> Invalid <| sprintf "Expected %s to %s" str description
+
+  and private isLowerCase str = 
+    str.ToLower() = str
+  
+  and private isUpperCase str = 
+    str.ToUpper() = str
+
+  and private caseInsensitive providedStr str =
+    String.Compare(providedStr, str, true) = 0
+
+  and private isEmail =
+    matchesRegex "^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"
+
+  and private isAlphaNumeric =
+    matchesRegex "^[a-zA-Z0-9]+$"
+
+  and private isValidGuid =
+    Guid.TryParse >> fst
+
+  and private isMinimumLength len str =
+    match len with
+      | PositiveInteger -> (!<) str.Length len
+      | NonPositiveInteger -> false
+
+  and private isMaximumLength len str =
+    match len with
+      | PositiveInteger -> (!>) str.Length len
+      | NonPositiveInteger -> false
+    
   let rec private numberMeetsProperties num props =
     match num, props with
       | _, [] -> Valid
