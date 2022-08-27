@@ -1,14 +1,14 @@
-framework: >= net45
+framework: >= net6
 source https://nuget.org/api/v2
 
-# The setting below means your libraries will assume a minimum target of .NET 4.5 + F# 4.0.
+# The setting below means your libraries will assume a minimum target of .NET 6
 #
 # To increase the minimum assumed .NET Framework, change the TargetFrameworkVersion in the .fsproj project files.
 #
 # To increase the minimum assumed F# version to F# 4.1, change to 
 #     nuget FSharp.Core ~> 4.1.0 redirects: force
 
-nuget FSharp.Core ~> 4.0.0.1 redirects: force
+nuget FSharp.Core ~> 6.0.0 redirects: force
 nuget FSharp.Data
 
 group Build
@@ -22,5 +22,5 @@ group Build
 group Test
   source https://nuget.org/api/v2
   
-  nuget NUnit ~> 2
-  nuget NUnit.Runners ~> 2
+  nuget NUnit ~> 3
+  nuget NUnit.Runners ~> 3
