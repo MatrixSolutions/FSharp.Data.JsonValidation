@@ -362,7 +362,7 @@ let ``when ArrayWhose [ItemsMatch schema] fails, it reports on the index of fail
 
   match result with
     | Valid -> failwithf "Expected invalid"
-    | Invalid message -> Assert.That(message, Is.StringContaining ".b [2]")
+    | Invalid message -> Assert.That(message, Does.Contain ".b [2]")
 
 [<Test>]
 let ``Either [...] ensures any item matches`` () =

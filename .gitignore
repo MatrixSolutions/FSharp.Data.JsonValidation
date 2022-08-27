@@ -177,7 +177,8 @@ nuget/*.nupkg
 release.cmd
 release.sh
 localpackages/
-paket-files
+.paket/
+paket-files/
 *.orig
 .paket/paket.exe
 docsrc/content/license.md
